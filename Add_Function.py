@@ -3,14 +3,31 @@ Autor / Author: Muslim Alimgeriev
 
 Code Beschreibung / Description:
 
-Diese Funktion arbeitet mit der File-IO-Bibliothek in Python und ist in eine grafische Benutzeroberfläche (GUI) integriert.
-Über Schaltflächen (Buttons) in der GUI können Aufgaben hinzugefügt werden. Jede Aufgabe wird im .txt-Dateiformat gespeichert,
-wobei ein strukturiertes Format verwendet wird, das eine spätere geordnete Auslesung ermöglicht. In der GUI werden alle gespeicherten
-Aufgaben in einer Liste angezeigt – sortiert nach ihrer Priorität.
+Diese Funktion arbeitet mit der File-IO-Bibliothek in Python und ermöglicht das Erstellen und Verwalten eines Aufgabenplaners.
+Der Benutzer kann Aufgaben mit Titel, Kategorie, Priorität, Startdatum, Deadline und Status erfassen.
+Alle Aufgaben werden in einer .txt-Datei gespeichert, wobei das Format so strukturiert ist, dass eine geordnete Auslesung und Verwaltung der Aufgaben möglich ist.
+Das Programm stellt sicher, dass das Startdatum nicht später als das Deadline-Datum ist. Der Benutzer kann den Status der Aufgaben später ändern.
+Der Benutzer hat die Möglichkeit, eine neue Datei zu erstellen oder eine bestehende Datei auszuwählen.
 
-This function uses Python’s File I/O to manage tasks within a graphical user interface (GUI). Tasks can be added via buttons in the GUI,
-and each task is saved in a structured format in a .txt file. This format ensures that tasks can later be read and displayed in an organized
-way. All saved tasks are shown in a list within the GUI, sorted by priority.
+Funktionen:
+- Aufgaben mit Titel, Kategorie, Priorität, Startdatum, Deadline und Status erfassen
+- Aufgaben in einer .txt-Datei speichern
+- Plausibilitätsprüfung für Start- und Enddatum
+- Status der Aufgaben ändern (Offen, In Bearbeitung, Erledigt)
+- Auswahl der Datei zum Speichern der Aufgaben
+
+This function uses Python's File I/O library to create and manage a task planner.
+The user can enter tasks with a title, category, priority, start date, deadline, and status.
+All tasks are stored in a .txt file, and the format is structured to allow for easy retrieval and management of tasks.
+The program ensures that the start date is not later than the deadline date. The user can later change the status of the tasks.
+The user has the option to create a new file or select an existing one for saving the tasks.
+
+Features:
+- Create tasks with title, category, priority, start date, deadline, and status
+- Save tasks in a .txt file
+- Validate start and deadline dates
+- Change the status of tasks (Open, In Progress, Done)
+- Option to select or create a file for saving tasks
 '''
 
 import os
@@ -20,46 +37,46 @@ LANG = "en"
 
 TEXTS = {
     "en": {
-        "welcome": "📋 Task Planner",
+        "welcome": "Task Planner",
         "choose_lang": "Choose language / Sprache wählen:\n1. English\n2. Deutsch",
-        "invalid": "❌ Invalid input. Try again.",
+        "invalid": "Invalid input. Try again.",
         "menu": "\nWhat would you like to do?\n1. Create new task\n2. Change task status\n3. Exit",
         "filename": "Enter filename (new or existing): ",
-        "title": "📌 Title: ",
-        "category": "📂 Category: ",
-        "priority": "\n⭐ Choose priority:",
-        "start_date": "📅 Start date (DD.MM.YYYY): ",
-        "deadline": "⏰ Deadline (DD.MM.YYYY): ",
-        "deadline_error": "❌ Deadline cannot be before start date!",
-        "status": "\n📌 Choose status:",
-        "saved": "✅ Task saved to ",
-        "change_status": "🔄 Change status",
+        "title": "Title: ",
+        "category": "Category: ",
+        "priority": "\nChoose priority:",
+        "start_date": "Start date (DD.MM.YYYY): ",
+        "deadline": "Deadline (DD.MM.YYYY): ",
+        "deadline_error": "Deadline cannot be before start date!",
+        "status": "\nChoose status:",
+        "saved": "Task saved to ",
+        "change_status": "Change status",
         "task_title": "Enter title of task to update: ",
-        "new_status": "✅ Choose new status:",
-        "not_found": "❌ Task not found.",
-        "status_updated": "✅ Status updated.",
-        "bye": "👋 Goodbye!",
+        "new_status": "Choose new status:",
+        "not_found": "Task not found.",
+        "status_updated": "Status updated.",
+        "bye": "Goodbye!",
     },
     "de": {
-        "welcome": "📋 Aufgabenplaner",
+        "welcome": "Aufgabenplaner",
         "choose_lang": "Choose language / Sprache wählen:\n1. English\n2. Deutsch",
-        "invalid": "❌ Ungültige Eingabe. Bitte erneut versuchen.",
+        "invalid": "Ungültige Eingabe. Bitte erneut versuchen.",
         "menu": "\nWas möchtest du tun?\n1. Neue Aufgabe erstellen\n2. Status ändern\n3. Beenden",
         "filename": "Dateiname eingeben (neu oder vorhanden): ",
-        "title": "📌 Titel: ",
-        "category": "📂 Kategorie: ",
-        "priority": "\n⭐ Priorität wählen:",
-        "start_date": "📅 Startdatum (TT.MM.JJJJ): ",
-        "deadline": "⏰ Deadline (TT.MM.JJJJ): ",
-        "deadline_error": "❌ Deadline darf nicht vor Startdatum liegen!",
-        "status": "\n📌 Status wählen:",
-        "saved": "✅ Aufgabe gespeichert in ",
-        "change_status": "🔄 Status ändern",
+        "title": "Titel: ",
+        "category": "Kategorie: ",
+        "priority": "\nPriorität wählen:",
+        "start_date": "Startdatum (TT.MM.JJJJ): ",
+        "deadline": "Deadline (TT.MM.JJJJ): ",
+        "deadline_error": "Deadline darf nicht vor Startdatum liegen!",
+        "status": "\nStatus wählen:",
+        "saved": "Aufgabe gespeichert in ",
+        "change_status": "Status ändern",
         "task_title": "Titel der Aufgabe zum Ändern: ",
-        "new_status": "✅ Neuer Status:",
-        "not_found": "❌ Aufgabe nicht gefunden.",
-        "status_updated": "✅ Status aktualisiert.",
-        "bye": "👋 Auf Wiedersehen!",
+        "new_status": "Neuer Status:",
+        "not_found": "Aufgabe nicht gefunden.",
+        "status_updated": "Status aktualisiert.",
+        "bye": "Auf Wiedersehen!",
     },
 }
 
@@ -128,7 +145,7 @@ def create_task():
 def change_task_status():
     filename = input(translate("filename")).strip()
     if not os.path.exists(filename):
-        print("❌ File not found.")
+        print("File not found.")
         return
 
     title_search = input(translate("task_title")).strip().lower()
