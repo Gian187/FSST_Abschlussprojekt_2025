@@ -1,11 +1,9 @@
 '''
 ABSCHLUSSPROJEKT FSST 4BHEL 2024/25
 -----------------------------------------
-
 Aufgabenplaner mit Zugriff über Sockets
-
 -----------------------------------------
-Briola Gionluca         Alimgeriev Muslim
+Briola Gianluca         Alimgeriev Muslim
 '''
 
 ### LIBRARIES
@@ -17,9 +15,6 @@ import os
 
 ### FILES
 from addtask import save_task_to_file, validate_dates
-
-###                                         TASK HINZUFÜGEN FUNKTION
-# -----------------------------------------------------------------------------------------------------------------
 
 # Funktion zum Speichern der Aufgabe
 def aufgabe_speichern():
@@ -35,51 +30,87 @@ def aufgabe_speichern():
             messagebox.showerror("Fehler", "❌ Deadline darf nicht vor dem Startdatum liegen.")
             return
 
-        # Speichern
         result = save_task_to_file("tasks.txt", title, category, priority, start, deadline, status)
         messagebox.showinfo("Gespeichert", f"✅ {result}")
-
+        lade_aufgaben()
     except ValueError:
         messagebox.showerror("Fehler", "❌ Ungültiges Datumsformat. Bitte TT.MM.JJJJ eingeben.")
     except Exception as e:
         messagebox.showerror("Fehler", f"❌ Fehler beim Speichern: {str(e)}")
 
 
+# Funktion zum Laden der Aufgaben
+def lade_aufgaben():
+    aufgaben_frame.destroy()
+    erstelle_aufgabenliste()
 
-###                                         GRAPHICAL USER INTERFACE
-# -----------------------------------------------------------------------------------------------------------------
+# Funktion zum Löschen einer Aufgabe
+def aufgabe_loeschen(index):
+    with open("tasks.txt", "r", encoding="utf-8") as file:
+        lines = file.readlines()
+    if 0 <= index < len(lines):
+        del lines[index]
+    with open("tasks.txt", "w", encoding="utf-8") as file:
+        file.writelines(lines)
+    lade_aufgaben()
 
-# Fenster erstellen
+# Funktion zur Anzeige der Aufgabenliste
+def erstelle_aufgabenliste():
+    global aufgaben_frame
+    aufgaben_frame = tk.Frame(tkFenster)
+    aufgaben_frame.pack(pady=10)
+
+    titel = tk.Label(aufgaben_frame, text="📋 Aufgabenliste:", font=("Helvetica", 16, 'bold'))
+    titel.grid(row=0, column=0, columnspan=3, sticky='w', pady=(10, 10))
+
+    if not os.path.exists("tasks.txt"):
+        return
+
+    with open("tasks.txt", "r", encoding="utf-8") as file:
+        lines = file.readlines()
+
+    for index, line in enumerate(lines):
+        teile = line.strip().split('|')
+        if len(teile) < 7:
+            continue
+
+        info = f"📝 {teile[0]} | Kategorie: {teile[1]} | Priorität: {teile[2]} | Start: {teile[3]} | Deadline: {teile[4]} | Status: {teile[5]} | Erstellt am: {teile[6]}"
+        label = tk.Label(aufgaben_frame, text=info, font=("Helvetica", 11), anchor='w', justify='left', wraplength=800)
+        label.grid(row=index+1, column=0, sticky='w', pady=2, padx=10)
+
+        delete_button = tk.Button(aufgaben_frame, text="❌ Löschen", font=("Helvetica", 10), bg="red", fg="white",
+                                  command=lambda i=index: aufgabe_loeschen(i))
+        delete_button.grid(row=index+1, column=1, padx=5)
+
+
+### GUI Aufbau
+
 tkFenster = tk.Tk()
 tkFenster.geometry("1000x800")
 tkFenster.title('Aufgabenplaner')
 
-# ------------------ Überschrift ------------------
 titel = tk.Label(tkFenster, text="Aufgabenplaner", font=("Helvetica", 24))
 titel.pack(pady=20)
 
 untertitel = tk.Label(tkFenster, text="Aufgabe hinzufügen:", font=("Helvetica", 15))
 untertitel.pack(pady=10)
 
-
-
-# ------------------ Eingabeformular ------------------
 formular_frame = tk.Frame(tkFenster)
 formular_frame.pack(pady=10)
 
-# Zeile: Name
+# Name
 namelabel = tk.Label(formular_frame, text="Name:", font=("Helvetica", 12), anchor='w', width=15)
 namelabel.grid(row=0, column=0, padx=5, pady=5, sticky='w')
 nameentry = tk.Entry(formular_frame, font=("Helvetica", 12), width=40)
 nameentry.grid(row=0, column=1, padx=5, pady=5)
 
-# Zeile: Beschreibung
+# Beschreibung
 beschreibunglabel = tk.Label(formular_frame, text="Beschreibung:", font=("Helvetica", 12), anchor='w', width=15)
 beschreibunglabel.grid(row=1, column=0, padx=5, pady=5, sticky='w')
 beschreibungentry = tk.Entry(formular_frame, font=("Helvetica", 12), width=40)
 beschreibungentry.grid(row=1, column=1, padx=5, pady=5)
 
-# Zeile: Priorität
+# Priorität
 priolabel = tk.Label(formular_frame, text="Priorität:", font=("Helvetica", 12), anchor='w', width=15)
 priolabel.grid(row=2, column=0, padx=5, pady=5, sticky='w')
 prioauswahl = tk.StringVar()
@@ -88,19 +119,19 @@ priodropdown = tk.OptionMenu(formular_frame, prioauswahl, "Hoch", "Mittel", "Nie
 priodropdown.config(font=("Helvetica", 12), width=37)
 priodropdown.grid(row=2, column=1, padx=5, pady=5)
 
-# Zeile: Startdatum
+# Startdatum
 startlabel = tk.Label(formular_frame, text="Startdatum:", font=("Helvetica", 12), anchor='w', width=15)
 startlabel.grid(row=3, column=0, padx=5, pady=5, sticky='w')
 startdatum = DateEntry(formular_frame, font=("Helvetica", 12), width=37, date_pattern="dd.mm.yyyy")
 startdatum.grid(row=3, column=1, padx=5, pady=5)
 
-# Zeile: Deadline
+# Deadline
 deadlinelabel = tk.Label(formular_frame, text="Deadline:", font=("Helvetica", 12), anchor='w', width=15)
 deadlinelabel.grid(row=4, column=0, padx=5, pady=5, sticky='w')
 deadlinedatum = DateEntry(formular_frame, font=("Helvetica", 12), width=37, date_pattern="dd.mm.yyyy")
 deadlinedatum.grid(row=4, column=1, padx=5, pady=5)
 
-# Zeile: Status
+# Status
 statuslabel = tk.Label(formular_frame, text="Status:", font=("Helvetica", 12), anchor='w', width=15)
 statuslabel.grid(row=5, column=0, padx=5, pady=5, sticky='w')
 statusauswahl = tk.StringVar()
@@ -109,22 +140,9 @@ statusdropdown = tk.OptionMenu(formular_frame, statusauswahl, "Offen", "In Bearb
 statusdropdown.config(font=("Helvetica", 12), width=37)
 statusdropdown.grid(row=5, column=1, padx=5, pady=5)
 
-# Zeile: Created At
-createdlabel = tk.Label(formular_frame, text="Created At:", font=("Helvetica", 12), anchor='w', width=15)
-createdlabel.grid(row=6, column=0, padx=5, pady=5, sticky='w')
-created_value = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
-createdentry = tk.Entry(formular_frame, font=("Helvetica", 12), width=40)
-createdentry.insert(0, created_value)
-createdentry.config(state='readonly')
-createdentry.grid(row=6, column=1, padx=5, pady=5)
-
-# Speichern-Button unter dem Formular
+# Speichern
 speicher_button = tk.Button(tkFenster, text="📝 Aufgabe speichern", font=("Helvetica", 14), bg="green", fg="white", command=aufgabe_speichern)
 speicher_button.pack(pady=20)
 
-
-
-
-# Fenter aktivieren
+erstelle_aufgabenliste()
 tkFenster.mainloop()
-
