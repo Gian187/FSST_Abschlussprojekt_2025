@@ -12,6 +12,7 @@ from tkinter import messagebox
 from tkcalendar import DateEntry
 from datetime import datetime
 import os
+import socket
 
 ### FILES
 from addtask import save_task_to_file, validate_dates
@@ -27,16 +28,16 @@ def aufgabe_speichern():
         deadline = datetime.strptime(deadlinedatum.get(), "%d.%m.%Y")
 
         if not validate_dates(start, deadline):
-            messagebox.showerror("Fehler", "❌ Deadline darf nicht vor dem Startdatum liegen.")
+            messagebox.showerror("Fehler", "Deadline darf nicht vor dem Startdatum liegen.")
             return
 
         result = save_task_to_file("tasks.txt", title, category, priority, start, deadline, status)
-        messagebox.showinfo("Gespeichert", f"✅ {result}")
+        messagebox.showinfo("Gespeichert", f"{result}")
         lade_aufgaben()
     except ValueError:
-        messagebox.showerror("Fehler", "❌ Ungültiges Datumsformat. Bitte TT.MM.JJJJ eingeben.")
+        messagebox.showerror("Fehler", "Ungültiges Datumsformat. Bitte TT.MM.JJJJ eingeben.")
     except Exception as e:
-        messagebox.showerror("Fehler", f"❌ Fehler beim Speichern: {str(e)}")
+        messagebox.showerror("Fehler", f"Fehler beim Speichern: {str(e)}")
 
 
 # Funktion zum Laden der Aufgaben
@@ -60,7 +61,7 @@ def erstelle_aufgabenliste():
     aufgaben_frame = tk.Frame(tkFenster)
     aufgaben_frame.pack(pady=10)
 
-    titel = tk.Label(aufgaben_frame, text="📋 Aufgabenliste:", font=("Helvetica", 16, 'bold'))
+    titel = tk.Label(aufgaben_frame, text="Aufgabenliste:", font=("Helvetica", 16, 'bold'))
     titel.grid(row=0, column=0, columnspan=3, sticky='w', pady=(10, 10))
 
     if not os.path.exists("tasks.txt"):
@@ -74,13 +75,38 @@ def erstelle_aufgabenliste():
         if len(teile) < 7:
             continue
 
-        info = f"📝 {teile[0]} | Kategorie: {teile[1]} | Priorität: {teile[2]} | Start: {teile[3]} | Deadline: {teile[4]} | Status: {teile[5]} | Erstellt am: {teile[6]}"
+        info = f"{teile[0]} | Kategorie: {teile[1]} | Priorität: {teile[2]} | Start: {teile[3]} | Deadline: {teile[4]} | Status: {teile[5]} | Erstellt am: {teile[6]}"
         label = tk.Label(aufgaben_frame, text=info, font=("Helvetica", 11), anchor='w', justify='left', wraplength=800)
         label.grid(row=index+1, column=0, sticky='w', pady=2, padx=10)
 
-        delete_button = tk.Button(aufgaben_frame, text="❌ Löschen", font=("Helvetica", 10), bg="red", fg="white",
+        delete_button = tk.Button(aufgaben_frame, text="Löschen", font=("Helvetica", 10), bg="red", fg="white",
                                   command=lambda i=index: aufgabe_loeschen(i))
         delete_button.grid(row=index+1, column=1, padx=5)
+
+        status_button = tk.Button(aufgaben_frame, text="Status ändern", font=("Helvetica", 10), bg="blue", fg="white",
+                                  command=lambda i=index: status_wechseln(i))
+        status_button.grid(row=index+1, column=2, padx=5)
+
+
+def status_wechseln(index):
+    with open("tasks.txt", "r") as file:
+        lines = file.readlines()
+
+    if 0 <= index < len(lines):
+        teile = lines[index].strip().split('|')
+        if len(teile) >= 7:
+            aktueller_status = teile[5].strip()
+            neue_status = {
+                "Offen": "In Bearbeitung",
+                "In Bearbeitung": "Erledigt",
+                "Erledigt": "Offen"
+            }
+            teile[5] = neue_status.get(aktueller_status, "Offen")
+            lines[index] = '|'.join(teile) + '\n'
+
+            with open("tasks.txt", "w", encoding="utf-8") as file:
+                file.writelines(lines)
+            lade_aufgaben()
 
 
 ### GUI Aufbau
@@ -141,7 +167,7 @@ statusdropdown.config(font=("Helvetica", 12), width=37)
 statusdropdown.grid(row=5, column=1, padx=5, pady=5)
 
 # Speichern
-speicher_button = tk.Button(tkFenster, text="📝 Aufgabe speichern", font=("Helvetica", 14), bg="green", fg="white", command=aufgabe_speichern)
+speicher_button = tk.Button(tkFenster, text="Aufgabe speichern", font=("Helvetica", 14), bg="green", fg="white", command=aufgabe_speichern)
 speicher_button.pack(pady=20)
 
 erstelle_aufgabenliste()
