@@ -1,68 +1,126 @@
-# Task Planner with Client/Server TCP Communication
+# 📋 Aufgabenplaner über Sockets – Abschlussprojekt FSST 4BHEL 2024/25
 
-## Description
-This project is a **task management application** that allows users to create, manage, and track tasks through a graphical user interface (GUI).  
-The application features **client/server communication using TCP sockets**, enabling multiple clients to interact with a central task database.
+## 🔧 Projektbeschreibung
 
----
+Dies ist ein einfacher Aufgabenplaner mit Client-Server-Architektur über Sockets. Die Anwendung besteht aus zwei Teilen:
 
-## Features
+- **Server** (Python): Verwaltet Aufgaben, speichert sie in einer Datei und verarbeitet Anfragen vom Client.
+- **Client** (Python mit Tkinter): Bietet eine grafische Benutzeroberfläche, um Aufgaben hinzuzufügen, zu löschen und deren Status zu ändern.
 
-### 🗂️ Task Management
-- Create tasks with:
-  - Title
-  - Category
-  - Priority
-  - Start date
-  - Deadline
-  - Status
-- View all tasks in a structured list
-- Delete tasks as needed
+Das Projekt wurde im Rahmen des Abschlussprojekts der **4BHEL** an der **HTL** realisiert.
 
-### ✅ Date Validation
-- Ensures deadlines cannot be set before start dates
-
-### 🌐 Multi-Language Support
-- English 🇬🇧 and German 🇩🇪 support (selectable in CLI version)
-
-### 🖧 Client-Server Architecture
-- TCP socket communication between client and server
-- Centralized task storage on server
-
-### 🖼️ User-Friendly GUI
-- Intuitive form for task creation
-- Clear task display with delete functionality
+👥 Projektteam:\
+**Briola Gianluca**\
+**Alimgeriev Muslim**
 
 ---
 
-## Technologies Used
-- **Python 3**
-- **Tkinter** (GUI)
-- **Socket programming** (TCP)
-- **File I/O** for task persistence
-- **Datetime** handling
+## 📁 Projektstruktur
+
+```bash
+📆 projekt/
+ ├│ 📄 server.py          # Server-Code zur Aufgabenverwaltung über Sockets
+ ├│ 📄 client.py          # Tkinter-Client zur GUI-basierten Aufgabenplanung
+ ├│ 📄 tasks.txt          # Lokale Datei, in der Aufgaben gespeichert werden
+ └│ 📄 README.md          # Diese Projektbeschreibung
+```
 
 ---
 
-## File Structure
+## 🚀 Funktionen
 
-| File              | Description                                              |
-|-------------------|----------------------------------------------------------|
-| `main.py`         | Main application file with GUI and core functionality   |
-| `addtask.py`      | Functions for task validation and file operations       |
-| `Add_Function.py` | Additional task management functions (CLI version)      |
-| `GUI.py`          | Alternative GUI implementation                          |
-| `server.py`       | TCP server handling centralized task storage            |
+✅ Aufgaben erstellen mit:
+
+- Titel
+- Beschreibung (Kategorie)
+- Priorität (Hoch, Mittel, Niedrig)
+- Startdatum & Deadline
+- Status (Offen, In Bearbeitung, Erledigt)
+
+✅ Aufgaben abrufen und anzeigen\
+✅ Aufgaben löschen\
+✅ Aufgabenstatus zyklisch ändern\
+✅ Daten lokal speichern (`tasks.txt`)\
+✅ Kommunikation über Sockets mit JSON-Format
 
 ---
 
-## Getting Started
+## ▶️ Voraussetzungen
 
-### ✅ Prerequisites
-- Python 3.x
-- Tkinter (usually included with Python)
-- Additional package: `tkcalendar`  
-  Install with:
+- Python 3.7 oder neuer
+- Folgende Python-Bibliotheken:
+  - `tkinter` (Standard bei Python)
+  - `tkcalendar`
+  - `socket`
+  - `threading`
+
+Installation fehlender Module:
 
 ```bash
 pip install tkcalendar
+```
+
+---
+
+## 🧐 Nutzung
+
+### 1. Starte den Server
+
+```bash
+python server.py
+```
+
+Der Server läuft standardmäßig auf `127.0.0.1:5000`.
+
+---
+
+### 2. Starte den Client
+
+```bash
+python client.py
+```
+
+Es öffnet sich ein GUI-Fenster zum Planen deiner Aufgaben.
+
+---
+
+## 💾 Speicherung
+
+Aufgaben werden lokal in einer Textdatei (`tasks.txt`) im folgenden Format gespeichert:
+
+```text
+Titel|Kategorie|Priorität|Startdatum|Deadline|Status|Erstellt am
+```
+
+Beispiel:
+
+```text
+Mathe lernen|Schule|Hoch|12.06.2025|15.06.2025|Offen|12.06.2025 10:15:32
+```
+
+---
+
+## ⚠️ Hinweise
+
+- Es wird keine Datenbank verwendet – alle Aufgaben werden in einer Textdatei gespeichert.
+- Das Projekt dient zu Lernzwecken (Grundlagen zu Sockets, Threads, GUI-Design und Dateiverarbeitung).
+
+---
+
+## 🏁 Ausblick / Erweiterungsmöglichkeiten
+
+- Aufgaben filtern oder sortieren
+- Dateibasierte Backups oder Export in andere Formate
+- Server-Authentifizierung
+- Webbasierter Client (z. B. mit Flask)
+
+---
+
+## 📜 Lizenz
+
+Dieses Projekt ist frei verwendbar für schulische und private Zwecke.
+
+---
+
+**Viel Spaß beim Aufgabenplanen! 🗂️**
+
